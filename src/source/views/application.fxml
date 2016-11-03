@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="source.views.Application">
+   <children>
+      <VBox layoutX="8.0" prefHeight="400.0" prefWidth="385.0" spacing="10.0">
+         <children>
+            <Label fx:id="helloLabel" prefHeight="50.0" prefWidth="385.0">
+               <font>
+                  <Font name="Comic Sans MS Bold" size="12.0" />
+               </font></Label>
+            <Button fx:id="firstModuleButton" mnemonicParsing="false" onAction="#firstModuleButtonAction" prefHeight="59.0" prefWidth="385.0" text="Первый модуль">
+               <font>
+                  <Font name="Comic Sans MS Bold" size="21.0" />
+               </font></Button>
+            <Button fx:id="secondModuleButton" mnemonicParsing="false" onAction="#secondModuleButtonAction" prefHeight="59.0" prefWidth="385.0" text="Второй модуль">
+               <font>
+                  <Font name="Comic Sans MS Bold" size="21.0" />
+               </font></Button>
+            <Button fx:id="examButton" mnemonicParsing="false" onAction="#examButtonAction" prefHeight="59.0" prefWidth="385.0" text="Комплексная контрольная работа">
+               <font>
+                  <Font name="Comic Sans MS Bold" size="21.0" />
+               </font></Button>
+            <Button fx:id="adminButton" mnemonicParsing="false" onAction="#adminButtonAction" prefHeight="59.0" prefWidth="385.0" text="Администрирование">
+               <font>
+                  <Font name="Comic Sans MS Bold" size="21.0" />
+               </font></Button>
+            <Button fx:id="exitButton" mnemonicParsing="false" onAction="#exitButtonAction" prefHeight="59.0" prefWidth="385.0" text="Выход">
+               <font>
+                  <Font name="Comic Sans MS Bold" size="21.0" />
+               </font></Button>
+         </children>
+      </VBox>
+   </children>
+</AnchorPane>

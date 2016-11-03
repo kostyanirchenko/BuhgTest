@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="300.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="source.views.admin.AdminController">
+   <children>
+      <VBox layoutX="123.0" layoutY="66.0" prefHeight="288.0" prefWidth="127.0" spacing="10.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+         <children>
+            <Label fx:id="helloLabel" prefHeight="75.0" prefWidth="380.0">
+               <font>
+                  <Font name="Comic Sans MS Bold" size="21.0" />
+               </font>
+            </Label>
+            <Button fx:id="addQuestionsButton" mnemonicParsing="false" onAction="#addQuestionsButtonAction" prefHeight="58.0" prefWidth="380.0" text="Добавить вопросы">
+               <font>
+                  <Font name="Comic Sans MS Bold" size="22.0" />
+               </font>
+            </Button>
+            <Button fx:id="addAdminButton" mnemonicParsing="false" onAction="#addAdminButtonAction" prefHeight="58.0" prefWidth="380.0" text="Добавить Администратора">
+               <font>
+                  <Font name="Comic Sans MS Bold" size="22.0" />
+               </font>
+            </Button>
+            <Button fx:id="backButton" mnemonicParsing="false" onAction="#backButtonAction" prefHeight="58.0" prefWidth="380.0" text="Назад">
+               <font>
+                  <Font name="Comic Sans MS Bold" size="22.0" />
+               </font>
+            </Button>
+         </children>
+      </VBox>
+   </children>
+</AnchorPane>
