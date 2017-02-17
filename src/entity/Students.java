@@ -36,6 +36,12 @@ public class Students implements Serializable {
     @Column(name = "test_type", unique = false, nullable = true, length = 100)
     private String test_type;
 
+    @Column(name = "login", unique = true, nullable = false, length = 16)
+    private String login;
+
+    @Column(name = "password", unique = true, nullable = false, length = 16)
+    private String password;
+
     public Students() {
     }
 
@@ -77,5 +83,21 @@ public class Students implements Serializable {
 
     public void setTest_type(String test_type) {
         this.test_type = test_type;
+    }
+
+    public String getLogin() {
+        return login;
+    }
+
+    public void setLogin(String login) {
+        this.login = login;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 }

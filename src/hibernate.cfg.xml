@@ -12,9 +12,12 @@
         <property name="hibernate.generate_statistics">false</property>
         <property name="show_sql">true</property>
         <property name="hbm2ddl.auto">update</property>
-        <property name="connection.characterEncoding">utf8</property>
+        <property name="connection.characterEncoding">UTF-8</property>
+        <property name="hibernate.connection.charSet">UTF-8</property>
         <property name="current_session_context_class">thread</property>
         <mapping class="entity.Students" />
         <mapping class="entity.Admin" />
+        <mapping class="entity.Groups" />
+        <mapping class="entity.Subjects" />
     </session-factory>
 </hibernate-configuration>

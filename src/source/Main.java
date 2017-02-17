@@ -20,6 +20,7 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import source.views.admin.AdminController;
 import util.HibernateUtil;
+import util.Messages;
 
 import java.io.IOException;
 import java.util.*;
@@ -37,7 +38,8 @@ public class Main extends Application {
 
     private Stage primaryStage;
 
-    private Students user;
+    private Students student;
+    private Admin admin;
 
     public static void main(String[] args) {
         launch(args);
@@ -64,23 +66,44 @@ public class Main extends Application {
             session1.getTransaction().commit();
             session1.close();
         }
+        Session sess = HibernateUtil.getSessionFactory().openSession();
+        sess.beginTransaction();
+        Query qu = sess.createQuery("from Students");
+        List<Students> st = (List<Students>) qu.list();
+        sess.getTransaction().commit();
+        sess.close();
+        if (st.size() == 0) {
+            Session session2 = HibernateUtil.getSessionFactory().openSession();
+            session2.beginTransaction();
+            Students students = new Students();
+            students.setName("test");
+            students.setStudentGroup("test");
+            students.setSurname("test");
+            students.setLogin("test");
+            students.setPassword("test");
+            session2.save(students);
+            session2.getTransaction().commit();
+            session2.close();
+        }
         launchApplication();
     }
+
+    private source.views.Application application;
 
     private void launchApplication() {
         FXMLLoader loader = new FXMLLoader();
         AnchorPane anchorPane;
         try {
             anchorPane = loader.load(getClass().getResourceAsStream("views/application.fxml"));
-            source.views.Application application = loader.getController();
-            application.setMain(this);
+            this.application = loader.getController();
+            this.application.setMain(this);
             Scene scene = new Scene(anchorPane);
             primaryStage.setScene(scene);
 
-            user = login();
-
-            application.setUser(user);
-
+//            student = login();
+//
+//            application.setUser(student);
+            login();
             primaryStage.show();
         } catch (IOException e) {
             logger.log(Level.SEVERE, "Exception: ", e);
@@ -93,7 +116,7 @@ public class Main extends Application {
             AnchorPane pane = loader.load(getClass().getResourceAsStream("views/admin/admin.fxml"));
             Stage adminStage = new Stage();
             adminStage.setTitle("Администрирование");
-            adminStage.initModality(Modality.WINDOW_MODAL);
+            adminStage.initModality(Modality.APPLICATION_MODAL);
             adminStage.initOwner(primaryStage);
             adminStage.setScene(new Scene(pane));
             AdminController adminController = loader.getController();
@@ -106,10 +129,10 @@ public class Main extends Application {
         }
     }
 
-    private Students login() {
+    private void login() {
         Dialog<Pair<String, String>> dialog = new Dialog<>();
-        dialog.setTitle("Данные для тестирования");
-        dialog.setHeaderText("Пожалуйста укажите ваши данные");
+        dialog.setTitle("Вход");
+        dialog.setHeaderText("Пожалуйста, авторизируйтесь под\nвашей учетной записью");
         dialog.setGraphic(new ImageView(this.getClass().getResource("views/images/login.png").toString()));
         ButtonType loginButtonType = new ButtonType("Далее", ButtonBar.ButtonData.OK_DONE);
         dialog.getDialogPane().getButtonTypes().addAll(loginButtonType);
@@ -117,39 +140,67 @@ public class Main extends Application {
         grid.setHgap(10);
         grid.setVgap(10);
         grid.setPadding(new Insets(20, 150, 10, 10));
-        TextField name = new TextField();
-        name.setPromptText("Введите ваше имя");
-        TextField surname = new TextField();
-        surname.setPromptText("Введите вашу фамилию");
-        TextField group = new TextField();
-        group.setPromptText("Введите вашу группу");
-        grid.add(new Label("Имя :"), 0, 0);
-        grid.add(name, 1, 0);
-        grid.add(new Label("Фамилия :"), 0, 1);
-        grid.add(surname, 1, 1);
-        grid.add(new Label("Группа :"), 0, 2);
-        grid.add(group, 1, 2);
+        TextField login = new TextField();
+        login.setPromptText("Введите ваш логин");
+        PasswordField password = new PasswordField();
+        password.setPromptText("Введите ваш пароль");
+        grid.add(new Label("Логин :"), 0, 0);
+        grid.add(login, 1, 0);
+        grid.add(new Label("Пароль :"), 0, 1);
+        grid.add(password, 1, 1);
         Node loginButton = dialog.getDialogPane().lookupButton(loginButtonType);
         loginButton.setDisable(true);
-        group.textProperty().addListener((observable, oldValue, newValue) -> {
+        password.textProperty().addListener((observable, oldValue, newValue) -> {
             loginButton.setDisable(newValue.trim().isEmpty());
         });
         dialog.getDialogPane().setContent(grid);
-        Platform.runLater(name::requestFocus);
+        Platform.runLater(login::requestFocus);
         dialog.setResultConverter(dialogButton -> {
             if (dialogButton == loginButtonType) {
-                return new Pair<>(surname.getText(), name.getText() + "." + group.getText());
+                return new Pair<>(login.getText(), password.getText());
             }
             return null;
         });
-        Students students = new Students();
         Optional<Pair<String, String>> result = dialog.showAndWait();
-        result.ifPresent(student -> {
-            students.setName(student.getValue().substring(0, student.getValue().indexOf(".")));
-            students.setSurname(student.getKey());
-            students.setStudentGroup(student.getValue().substring(student.getValue().indexOf(".") + 1));
+        result.ifPresent(person -> {
+            Session getAdmin = HibernateUtil.getSessionFactory().openSession();
+            getAdmin.beginTransaction();
+            Query query = getAdmin.createQuery("from Admin where login = :login and password = :password")
+                    .setString("login", person.getKey())
+                    .setString("password", person.getValue());
+            List<Admin> admins = (List<Admin>) query.list();
+            getAdmin.getTransaction().commit();
+            getAdmin.close();
+            try {
+                if (admins.size() == 0) {
+                    Session getStudents = HibernateUtil.getSessionFactory().openSession();
+                    getStudents.beginTransaction();
+                    Query query1 = getStudents.createQuery("from Students where login = :login and password = :password")
+                            .setString("login", person.getKey())
+                            .setString("password", person.getValue());
+                    List<Students> studentsList = (List<Students>) query1.list();
+                    getStudents.getTransaction().commit();
+                    getStudents.close();
+                    setStudent(studentsList.get(0));
+                } else {
+//                setAdmin(admins.get(0));
+                }
+            } catch (Exception e) {
+                Messages.showErrorMessage("Введен неверный логин или пароль, попробуйте еще раз.");
+                login();
+            }
+
         });
-        return students;
+    }
+
+//    private void setAdmin(Admin admin) {
+//        this.admin = admin;
+//        application.setUser(admin);
+//    }
+
+    private void setStudent(Students student) {
+        this.student = student;
+        application.setUser(student);
     }
 
     public Stage getPrimaryStage() {
