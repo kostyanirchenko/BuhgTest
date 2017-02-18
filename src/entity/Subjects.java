@@ -28,10 +28,10 @@ public class Subjects implements Serializable {
     @Column(name = "subject", unique = false, nullable = false, length = 30)
     private String subject;
 
-    @Column(name = "courseId", unique = false, nullable = false, length = 2)
+    @Column(name = "courseId", unique = false, length = 2)
     private int courseId;
 
-    @Column(name = "groupId", unique = false, nullable = false, length = 2)
+    @Column(name = "groupId", unique = false, length = 2)
     private int groupId;
 
     public Subjects() {
@@ -59,5 +59,14 @@ public class Subjects implements Serializable {
 
     public void setGroupId(int groupId) {
         this.groupId = groupId;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    @Override
+    public String toString() {
+        return getSubject();
     }
 }

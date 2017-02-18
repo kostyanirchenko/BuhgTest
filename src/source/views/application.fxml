@@ -5,9 +5,9 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="source.views.Application">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="343.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="source.views.Application">
    <children>
-      <VBox layoutX="8.0" prefHeight="400.0" prefWidth="385.0" spacing="10.0">
+      <VBox layoutX="8.0" prefHeight="400.0" prefWidth="385.0" spacing="10.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
          <children>
             <Label fx:id="helloLabel" prefHeight="50.0" prefWidth="385.0">
                <font>
@@ -22,10 +22,6 @@
                   <Font name="Comic Sans MS Bold" size="21.0" />
                </font></Button>
             <Button fx:id="examButton" mnemonicParsing="false" onAction="#examButtonAction" prefHeight="59.0" prefWidth="385.0" text="Комплексная контрольная работа">
-               <font>
-                  <Font name="Comic Sans MS Bold" size="21.0" />
-               </font></Button>
-            <Button fx:id="adminButton" mnemonicParsing="false" onAction="#adminButtonAction" prefHeight="59.0" prefWidth="385.0" text="Администрирование">
                <font>
                   <Font name="Comic Sans MS Bold" size="21.0" />
                </font></Button>

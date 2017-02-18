@@ -1,8 +1,6 @@
 package source.views.admin;
 
-import entity.Admin;
-import entity.Groups;
-import entity.Students;
+import entity.*;
 import javafx.application.Platform;
 import javafx.beans.Observable;
 import javafx.collections.FXCollections;
@@ -78,15 +76,35 @@ public class AdminController {
         login.setPromptText("Введите новый логин");
         PasswordField password = new PasswordField();
         password.setPromptText("Введите пароль");
+        CheckBox isInstructor = new CheckBox();
         grid.add(new Label("Логин :"), 0, 0);
         grid.add(login, 1, 0);
         grid.add(new Label("Пароль :"), 0, 1);
         grid.add(password, 1, 1);
+        grid.add(new Label("Преподаватель?"), 0, 2);
+        grid.add(isInstructor, 1, 2);
         Node addButton = addAdminDialog.getDialogPane().lookupButton(addButtonType);
         addButton.setDisable(true);
-        password.textProperty().addListener(((observable, oldValue, newValue) -> {
-            addButton.setDisable(newValue.trim().isEmpty());
+        TextField name = new TextField();
+        name.setPromptText("Введите имя");
+        name.setDisable(true);
+        TextField surname = new TextField();
+        surname.setPromptText("Введите фамилию");
+        surname.setDisable(true);
+        ComboBox<Subjects> subjectsComboBox = new ComboBox<>(selectAllSubjects());
+        subjectsComboBox.setDisable(true);
+        grid.add(new Label("Имя :"), 0, 3);
+        grid.add(name, 1, 3);
+        grid.add(new Label("Фамилия :"), 0, 4);
+        grid.add(surname, 1, 4);
+        grid.add(new Label("Дисциплина :"), 0, 5);
+        grid.add(subjectsComboBox, 1, 5);
+        isInstructor.selectedProperty().addListener(((observable, oldValue, newValue) -> {
+            name.setDisable(oldValue);
+            surname.setDisable(oldValue);
+            subjectsComboBox.setDisable(oldValue);
         }));
+        password.textProperty().addListener(((observable, oldValue, newValue) -> addButton.setDisable(newValue.trim().isEmpty())));
         addAdminDialog.getDialogPane().setContent(grid);
         Platform.runLater(login::requestFocus);
         addAdminDialog.setResultConverter(dialogButton -> {
@@ -97,15 +115,46 @@ public class AdminController {
         });
         Optional<Pair<String, String>> result = addAdminDialog.showAndWait();
         result.ifPresent(newAdmin -> {
-            Session session = HibernateUtil.getSessionFactory().openSession();
-            session.beginTransaction();
-            Admin admin = new Admin();
-            admin.setLogin(newAdmin.getKey());
-            admin.setPassword(newAdmin.getValue());
-            session.save(admin);
+            if (!isInstructor.isSelected()) {
+                Session session = HibernateUtil.getSessionFactory().openSession();
+                session.beginTransaction();
+                Admin admin = new Admin();
+                admin.setLogin(newAdmin.getKey());
+                admin.setPassword(newAdmin.getValue());
+                session.save(admin);
+                session.getTransaction().commit();
+                session.close();
+            } else {
+                Session session = HibernateUtil.getSessionFactory().openSession();
+                session.beginTransaction();
+                Instructor instructor = new Instructor();
+                instructor.setName(name.getText());
+                instructor.setSurname(surname.getText());
+                instructor.setLogin(newAdmin.getKey());
+                instructor.setPassword(newAdmin.getValue());
+                instructor.setSubjectId(subjectsComboBox.getSelectionModel().getSelectedItem().getId());
+                session.save(instructor);
+                session.getTransaction().commit();
+                session.close();
+            }
+        });
+    }
+
+    private ObservableList<Subjects> selectAllSubjects() {
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        session.beginTransaction();
+        ObservableList<Subjects> tmp = FXCollections.observableArrayList();
+        try {
+            Query query = session.createQuery("from Subjects");
+            List<Subjects> tmpl = (List<Subjects>) query.list();
+            for (Subjects s : tmpl)
+                tmp.add(s);
             session.getTransaction().commit();
             session.close();
-        });
+        } catch (HibernateException e) {
+            Messages.showErrorMessage(e);
+        }
+        return tmp;
     }
 
     public void backButtonAction(ActionEvent actionEvent) {
@@ -126,7 +175,26 @@ public class AdminController {
     }
 
     public void addSubjectButtonAction(ActionEvent actionEvent) {
-
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.setTitle("Администрирование");
+        dialog.setHeaderText("Добавление новой дисциплины");
+        dialog.setContentText("Введите название дисциплины");
+        Optional<String> result = dialog.showAndWait();
+        result.ifPresent(subject -> {
+            try {
+                if (!subject.isEmpty()) {
+                    Session session = HibernateUtil.getSessionFactory().openSession();
+                    session.beginTransaction();
+                    Subjects subjects = new Subjects();
+                    subjects.setSubject(subject);
+                    session.save(subjects);
+                    session.getTransaction().commit();
+                    session.close();
+                } else Messages.showLoginErrorMessage("Не введены данные");
+            } catch (HibernateException e) {
+                Messages.showErrorMessage(e);
+            }
+        });
     }
 
     private ObservableList<Groups> groupsObservableList = FXCollections.observableArrayList();

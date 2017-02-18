@@ -106,7 +106,7 @@ public class Main extends Application {
 //
 //            application.setUser(student);
             login();
-            primaryStage.show();
+//            primaryStage.show();
         } catch (IOException e) {
             logger.log(Level.SEVERE, "Exception: ", e);
         }
@@ -185,8 +185,15 @@ public class Main extends Application {
                     getStudents.getTransaction().commit();
                     getStudents.close();
                     setStudent(studentsList.get(0));
+                    primaryStage.show();
                 } else {
-//                setAdmin(admins.get(0));
+                    try {
+                        Session session = HibernateUtil.getSessionFactory().openSession();
+                        session.beginTransaction();
+                    } catch (Exception e) {
+                        Messages.showErrorMessage(e);
+                    }
+                    launchAdminPanel(admins);
                 }
             } catch (Exception e) {
                 Messages.showLoginErrorMessage("Введен неверный логин или пароль, попробуйте еще раз.");
