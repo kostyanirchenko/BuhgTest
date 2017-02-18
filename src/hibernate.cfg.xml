@@ -19,5 +19,7 @@
         <mapping class="entity.Admin" />
         <mapping class="entity.Groups" />
         <mapping class="entity.Subjects" />
+        <mapping class="entity.Questions" />
+        <mapping class="entity.Answers" />
     </session-factory>
 </hibernate-configuration>

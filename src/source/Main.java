@@ -1,6 +1,7 @@
 package source;
 
 import entity.Admin;
+import entity.Questions;
 import entity.Students;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -19,6 +20,7 @@ import javafx.util.Pair;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import source.views.admin.AdminController;
+import source.views.admin.add.AddQuestionsController;
 import util.HibernateUtil;
 import util.Messages;
 
@@ -115,6 +117,7 @@ public class Main extends Application {
             FXMLLoader loader = new FXMLLoader();
             AnchorPane pane = loader.load(getClass().getResourceAsStream("views/admin/admin.fxml"));
             Stage adminStage = new Stage();
+            adminStage.getIcons().add(new Image(this.getClass().getResourceAsStream("views/images/admin.jpg")));
             adminStage.setTitle("Администрирование");
             adminStage.initModality(Modality.APPLICATION_MODAL);
             adminStage.initOwner(primaryStage);
@@ -186,7 +189,7 @@ public class Main extends Application {
 //                setAdmin(admins.get(0));
                 }
             } catch (Exception e) {
-                Messages.showErrorMessage("Введен неверный логин или пароль, попробуйте еще раз.");
+                Messages.showLoginErrorMessage("Введен неверный логин или пароль, попробуйте еще раз.");
                 login();
             }
 
@@ -201,6 +204,27 @@ public class Main extends Application {
     private void setStudent(Students student) {
         this.student = student;
         application.setUser(student);
+    }
+
+    public boolean addNewQuestion(/*Questions question*/) {
+        try {
+            FXMLLoader loader = new FXMLLoader();
+            AnchorPane newStage = loader.load(getClass().getResourceAsStream("views/admin/add/add.fxml"));
+            Stage newQuestionStage = new Stage();
+            newQuestionStage.setTitle("Добавление");
+            newQuestionStage.getIcons().add(new Image(this.getClass().getResourceAsStream("views/images/new.png")));
+            newQuestionStage.initModality(Modality.APPLICATION_MODAL);
+            newQuestionStage.initOwner(primaryStage);
+            Scene scene = new Scene(newStage);
+            newQuestionStage.setScene(scene);
+            AddQuestionsController addQuestionsController = loader.getController();
+            addQuestionsController.setStage(newQuestionStage);
+            newQuestionStage.showAndWait();
+            return addQuestionsController.isOkClicked();
+        } catch (IOException e) {
+           Messages.showErrorMessage(e);
+           return false;
+        }
     }
 
     public Stage getPrimaryStage() {

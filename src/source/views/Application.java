@@ -20,6 +20,7 @@ import org.hibernate.Session;
 import source.Main;
 import source.views.testing.TestingController;
 import util.HibernateUtil;
+import util.Messages;
 
 import java.io.IOException;
 import java.util.List;
@@ -75,6 +76,7 @@ public class Application {
             stage.showAndWait();
         } catch (IOException e) {
             logger.log(Level.SEVERE, "Exception: ", e);
+            Messages.showErrorMessage(e);
         }
     }
 
@@ -96,6 +98,7 @@ public class Application {
             stage.showAndWait();
         } catch (IOException e) {
             logger.log(Level.SEVERE, "Exception: ", e);
+            Messages.showErrorMessage(e);
         }
     }
 
@@ -117,6 +120,7 @@ public class Application {
             stage.showAndWait();
         } catch (IOException e) {
             logger.log(Level.SEVERE, "Exception: ", e);
+            Messages.showErrorMessage(e);
         }
     }
 
@@ -150,7 +154,7 @@ public class Application {
         grid.add(password, 1, 1);
         Node loginButton = dialog.getDialogPane().lookupButton(loginButtonType);
         loginButton.setDisable(true);
-        username.textProperty().addListener((observable, oldValue, newValue) -> {
+        password.textProperty().addListener((observable, oldValue, newValue) -> {
             loginButton.setDisable(newValue.trim().isEmpty());
         });
         dialog.getDialogPane().setContent(grid);
@@ -170,6 +174,10 @@ public class Application {
                 List<Admin> adminList = (List<Admin>) query.list();
                 session.getTransaction().commit();
                 session.close();
+                if (adminList.size() == 0) {
+                    Messages.showLoginErrorMessage("Введен неверный логин или пароль, попробуйте еще раз.");
+                    return;
+                }
                 for (Admin adm : adminList) {
                     if (adm.getPassword().equals(usernamePassword.getValue())) {
                         System.out.println("complete");
@@ -178,6 +186,7 @@ public class Application {
                 }
             } catch (Exception e) {
                 logger.log(Level.SEVERE, "Exception: ", e);
+                Messages.showErrorMessage(e);
             }
         });
     }

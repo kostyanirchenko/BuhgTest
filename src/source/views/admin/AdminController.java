@@ -57,19 +57,9 @@ public class AdminController {
     private Stage stage;
 
     public void addQuestionsButtonAction(ActionEvent actionEvent) {
-        try {
-            FXMLLoader loader = new FXMLLoader();
-            AnchorPane pane = loader.load(getClass().getResourceAsStream("add/add.fxml"));
-            Stage stage = new Stage();
-            stage.setTitle("Добавление");
-            stage.initModality(Modality.APPLICATION_MODAL);
-            stage.initOwner(this.stage);
-            stage.setScene(new Scene(pane));
-            AddQuestionsController addQuestionsController = loader.getController();
-            addQuestionsController.setStage(stage);
-            stage.showAndWait();
-        } catch (IOException e) {
-            logger.log(Level.SEVERE, "Exception: ", e);
+        boolean addClicked = main.addNewQuestion();
+        if (addClicked) {
+            Messages.showInfoMessage("Операция прошла успешно!");
         }
     }
 
@@ -154,7 +144,7 @@ public class AdminController {
             }
             tmp = null;
         } catch (HibernateException e) {
-            Messages.showErrorMessage(e.getMessage());
+            Messages.showErrorMessage(e);
         }
         Dialog<Pair<String, String>> dialog = new Dialog<>();
         dialog.setTitle("Добавление студента");
@@ -221,7 +211,8 @@ public class AdminController {
         dialog.setTitle("Добавление группы");
         dialog.setHeaderText("Укажите название группы");
         ButtonType loginButtonType = new ButtonType("Далее", ButtonBar.ButtonData.OK_DONE);
-        dialog.getDialogPane().getButtonTypes().addAll(loginButtonType);
+        ButtonType cancelButtonType = new ButtonType("Назад", ButtonBar.ButtonData.CANCEL_CLOSE);
+        dialog.getDialogPane().getButtonTypes().addAll(loginButtonType, cancelButtonType);
         GridPane grid = new GridPane();
         grid.setHgap(10);
         grid.setVgap(10);
