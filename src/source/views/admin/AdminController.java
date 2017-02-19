@@ -182,7 +182,7 @@ public class AdminController {
         Optional<String> result = dialog.showAndWait();
         result.ifPresent(subject -> {
             try {
-                if (!subject.isEmpty()) {
+                if (!subject.trim().isEmpty()) {
                     Session session = HibernateUtil.getSessionFactory().openSession();
                     session.beginTransaction();
                     Subjects subjects = new Subjects();
@@ -200,6 +200,7 @@ public class AdminController {
     private ObservableList<Groups> groupsObservableList = FXCollections.observableArrayList();
 
     public void addStudentButtonAction(ActionEvent actionEvent) {
+        if (groupsObservableList.size() != 0) groupsObservableList.clear();
         Session session = HibernateUtil.getSessionFactory().openSession();
         session.beginTransaction();
         try {
@@ -247,7 +248,7 @@ public class AdminController {
         grid.add(groups, 1, 4);
         Node loginButton = dialog.getDialogPane().lookupButton(loginButtonType);
         loginButton.setDisable(true);
-        username.textProperty().addListener((observable, oldValue, newValue) -> {
+        studentSurname.textProperty().addListener((observable, oldValue, newValue) -> {
             loginButton.setDisable(newValue.trim().isEmpty());
         });
         dialog.getDialogPane().setContent(grid);
