@@ -1,11 +1,5 @@
 package source.views.result;
 
-import entity.Instructor;
-import entity.Result;
-import entity.Students;
-import entity.Subjects;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -13,12 +7,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.stage.Stage;
 import model.Student;
-import org.hibernate.Query;
-import org.hibernate.Session;
-import util.DateUtil;
-import util.HibernateUtil;
-
-import java.util.List;
+import source.Main;
 
 /**
  * Created by Kostya Nirchenko.
@@ -46,57 +35,16 @@ public class ResultController {
 
     private Stage stage;
 
-    private Instructor instructor;
-
-    private ObservableList<Student> resultList = FXCollections.observableArrayList();
+    private Main main;
 
     public ResultController() {
-        try {
-            Session session = HibernateUtil.getSessionFactory().openSession();
-            session.beginTransaction();
-            Query query = session.createQuery("from Result where subjectId = :subjectId")
-                    .setInteger("subjectId", instructor.getSubjectId());
-            List<Result> results = (List<Result>) query.list();
-            session.getTransaction().commit();
-            session.close();
-            for (Result result : results) {
-                Session students = HibernateUtil.getSessionFactory().openSession();
-                students.beginTransaction();
-                Query studentsQuery = students.createQuery("from Students where id = :studentId")
-                        .setInteger("studentId", result.getStudentId());
-                List<Students> stList = (List<Students>) studentsQuery.list();
-                students.getTransaction().commit();
-                students.close();
-                Session sub = HibernateUtil.getSessionFactory().openSession();
-                sub.beginTransaction();
-                Query subQuery = sub.createQuery("from Subjects where id = :id")
-                        .setParameter("id", result.getSubjectId());
-                List<Subjects> subList = (List<Subjects>) subQuery.list();
-                sub.getTransaction().commit();
-                sub.close();
-                resultList.add(new Student(
-                        stList.get(0).getName(),
-                        stList.get(0).getSurname(),
-                        stList.get(0).getStudentGroup(),
-                        subList.get(0).getId() + "",
-                        result.getRightAnswer(),
-                        result.getWrongAnswer(),
-                        DateUtil.parse(result.getTestDate()),
-                        result.getTestTime()
-                ));
-            }
-        } catch (Exception e) {
-//            Messages.showErrorMessage(e);
-            e.printStackTrace();
-            System.out.println(instructor.getSubjectId());
-        }
+
     }
 
     public void initialize() {
         nameColumn.setCellValueFactory(cellData -> cellData.getValue().studentNameProperty());
         surnameColumn.setCellValueFactory(cellData -> cellData.getValue().studentSurnameProperty());
         groupColumn.setCellValueFactory(cellData -> cellData.getValue().studentGroupProperty());
-        tableView.setItems(resultList);
         showResultDetail(null);
         tableView.getSelectionModel().selectedItemProperty().addListener(((observable, oldValue, newValue) -> showResultDetail(newValue)));
     }
@@ -117,7 +65,7 @@ public class ResultController {
             subjectLabel.setText(student.getSubject());
             rightAnswerLabel.setText(Integer.toString(student.getRightAnswer()));
             wrongAnswerLabel.setText(Integer.toString(student.getWrongAnswer()));
-            testDateLabel.setText(DateUtil.format(student.getTestDate()));
+            testDateLabel.setText(student.getTestDate());
             testTimeLabel.setText(student.getTestTime());
         } else {
             nameLabel.setText("");
@@ -131,7 +79,9 @@ public class ResultController {
         }
     }
 
-    public void setInstructor(Instructor instructor) {
-        this.instructor = instructor;
+    public void setMain(Main main) {
+        this.main = main;
+        tableView.setItems(main.getResultList());
+        main.getResultList().clear();
     }
 }

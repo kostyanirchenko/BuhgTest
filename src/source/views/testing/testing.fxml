@@ -5,11 +5,50 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="source.views.testing.TestingController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="source.views.testing.TestingController">
    <children>
-      <Label fx:id="testTypeLabel" layoutX="14.0" layoutY="14.0" prefHeight="17.0" prefWidth="573.0" textAlignment="CENTER">
+      <Label fx:id="testTypeLabel" layoutX="14.0" layoutY="14.0" prefHeight="17.0" prefWidth="380.0" textAlignment="CENTER" AnchorPane.rightAnchor="10.0">
          <font>
             <Font name="Comic Sans MS Bold" size="20.0" />
          </font></Label>
+      <GridPane layoutX="14.0" layoutY="84.0" prefHeight="231.0" prefWidth="371.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0">
+        <columnConstraints>
+          <ColumnConstraints hgrow="SOMETIMES" maxWidth="185.0" minWidth="10.0" prefWidth="106.0" />
+          <ColumnConstraints hgrow="SOMETIMES" maxWidth="323.0" minWidth="10.0" prefWidth="274.0" />
+        </columnConstraints>
+        <rowConstraints>
+          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+        </rowConstraints>
+         <children>
+            <Label text="Вопрос" />
+            <Label text="Вариант ответа а)" GridPane.rowIndex="1" />
+            <Label text="Вариант ответа b)" GridPane.rowIndex="2" />
+            <Label text="Вариант ответа c)" GridPane.rowIndex="3" />
+            <Label text="Вариант ответа d)" GridPane.rowIndex="4" />
+            <RadioButton fx:id="firstAnswerButton" mnemonicParsing="false" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+            <RadioButton fx:id="secondAnswerButton" mnemonicParsing="false" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+            <RadioButton fx:id="thirdAnswerButton" mnemonicParsing="false" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+            <RadioButton fx:id="fourthAnswerButton" mnemonicParsing="false" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+            <Label fx:id="questionLabel" GridPane.columnIndex="1" />
+         </children>
+      </GridPane>
+      <HBox layoutX="235.0" layoutY="359.0" spacing="10.0">
+         <children>
+            <Button fx:id="answerButton" layoutX="235.0" layoutY="359.0" mnemonicParsing="false" onAction="#answerButtonAction" text="Ответить" AnchorPane.bottomAnchor="10.0">
+               <font>
+                  <Font name="Comic Sans MS Bold" size="14.0" />
+               </font>
+            </Button>
+            <Button fx:id="backButton" layoutX="334.0" layoutY="361.0" mnemonicParsing="false" onAction="#backButtonAction" text="Назад" AnchorPane.bottomAnchor="10.0" AnchorPane.rightAnchor="10.0">
+               <font>
+                  <Font name="Comic Sans MS Bold" size="14.0" />
+               </font>
+            </Button>
+         </children>
+      </HBox>
    </children>
 </AnchorPane>

@@ -1,8 +1,9 @@
 package model;
 
-import javafx.beans.property.*;
-
-import java.time.LocalDate;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 
 /**
  * Created by Kostya Nirchenko.
@@ -17,18 +18,18 @@ public class Student {
     private final StringProperty subject;
     private final IntegerProperty rightAnswer;
     private final IntegerProperty wrongAnswer;
-    private final ObjectProperty<LocalDate> testDate;
+    private final StringProperty testDate;
     private final StringProperty testTime;
 
     public Student(String studentName, String studentSurname, String studentGroup, String subject,
-                   int rightAnswer, int wrongAnswer, LocalDate testDate, String testTime) {
+                   int rightAnswer, int wrongAnswer, String  testDate, String testTime) {
         this.studentName = new SimpleStringProperty(studentName);
         this.studentSurname = new SimpleStringProperty(studentSurname);
         this.studentGroup = new SimpleStringProperty(studentGroup);
         this.subject = new SimpleStringProperty(subject);
         this.rightAnswer = new SimpleIntegerProperty(rightAnswer);
         this.wrongAnswer = new SimpleIntegerProperty(wrongAnswer);
-        this.testDate = new SimpleObjectProperty<LocalDate>(testDate);
+        this.testDate = new SimpleStringProperty(testDate);
         this.testTime = new SimpleStringProperty(testTime);
     }
 
@@ -108,15 +109,15 @@ public class Student {
         this.wrongAnswer.set(wrongAnswer);
     }
 
-    public LocalDate getTestDate() {
+    public String getTestDate() {
         return testDate.get();
     }
 
-    public ObjectProperty<LocalDate> testDateProperty() {
+    public StringProperty testDateProperty() {
         return testDate;
     }
 
-    public void setTestDate(LocalDate testDate) {
+    public void setTestDate(String testDate) {
         this.testDate.set(testDate);
     }
 

@@ -2,6 +2,7 @@ package source.views;
 
 import entity.Admin;
 import entity.Students;
+import entity.Subjects;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
@@ -71,6 +72,18 @@ public class Application {
     }
 
     private void startTest(String test_type) {
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        session.beginTransaction();
+        Query query = session.createQuery("from Subjects");
+        List<Subjects> subjectsList = (List<Subjects>) query.list();
+        session.getTransaction().commit();
+        session.close();
+        ChoiceDialog<Subjects> dialog = new ChoiceDialog<>(null, subjectsList);
+        dialog.setTitle("Тестирование");
+        dialog.setHeaderText("Выберите дисциплину");
+        dialog.setContentText("Дисциплина");
+        Optional<Subjects> result = dialog.showAndWait();
+        Subjects subject = result.get();
         try {
             FXMLLoader loader = new FXMLLoader();
             AnchorPane pane = loader.load(main.getClass().getResourceAsStream("views/testing/testing.fxml"));
@@ -80,7 +93,7 @@ public class Application {
             stage.initOwner(main.getPrimaryStage());
             stage.setScene(new Scene(pane));
             TestingController testingController = loader.getController();
-            testingController.setMain(main);
+            testingController.setMain(main, subject);
             user.setTest_type(test_type);
             saveStudent(user);
             testingController.setStudents(user);

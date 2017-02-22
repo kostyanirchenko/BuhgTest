@@ -196,8 +196,10 @@ public class InstructorController {
             resultStage.initOwner(main.getPrimaryStage());
             resultStage.setScene(new Scene(pane));
             ResultController resultController = loader.getController();
+//            resultController.setInstructor(instructor);
+            resultController.setMain(main);
+            main.initSubjectForInstructor(instructor);
             resultController.setStage(resultStage);
-            resultController.setInstructor(instructor);
             resultStage.showAndWait();
         } catch (Exception e) {
 //            Messages.showErrorMessage(e);
@@ -206,6 +208,6 @@ public class InstructorController {
     }
 
     public void exitButtonAction(ActionEvent actionEvent) {
-        stage.close();
+        System.exit(0);
     }
 }

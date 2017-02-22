@@ -105,5 +105,9 @@ public class Answers implements Serializable {
     public void setQuestionId(int questionId) {
         this.questionId = questionId;
     }
+
+    public int getId() {
+        return id;
+    }
 }
 

@@ -1,10 +1,10 @@
 package source;
 
-import entity.Admin;
-import entity.Instructor;
-import entity.Students;
+import entity.*;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
@@ -17,6 +17,7 @@ import javafx.scene.layout.GridPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Pair;
+import model.Student;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import source.views.admin.AdminController;
@@ -44,6 +45,7 @@ public class Main extends Application {
 
     private Students student;
     private Admin admin;
+    private Instructor instructor;
 
     public static void main(String[] args) {
         launch(args);
@@ -264,6 +266,53 @@ public class Main extends Application {
         return this.primaryStage;
     }
 
+    private ObservableList<Student> resultList = FXCollections.observableArrayList();
+
+    public void initSubjectForInstructor(Instructor instructor) {
+        try {
+            Session session = HibernateUtil.getSessionFactory().openSession();
+            session.beginTransaction();
+            System.out.println(instructor.getSubjectId());
+            Query query = session.createQuery("from Result where subjectId = :subjectId")
+                    .setParameter("subjectId", instructor.getSubjectId());
+            List<Result> results = (List<Result>) query.list();
+            session.getTransaction().commit();
+            session.close();
+            for (Result result : results) {
+                Session students = HibernateUtil.getSessionFactory().openSession();
+                students.beginTransaction();
+                Query studentsQuery = students.createQuery("from Students where id = :studentId")
+                        .setInteger("studentId", result.getStudentId());
+                List<Students> stList = (List<Students>) studentsQuery.list();
+                students.getTransaction().commit();
+                students.close();
+                Session sub = HibernateUtil.getSessionFactory().openSession();
+                sub.beginTransaction();
+                Query subQuery = sub.createQuery("from Subjects where id = :id")
+                        .setParameter("id", result.getSubjectId());
+                List<Subjects> subList = (List<Subjects>) subQuery.list();
+                sub.getTransaction().commit();
+                sub.close();
+                resultList.add(new Student(
+                        stList.get(0).getName(),
+                        stList.get(0).getSurname(),
+                        stList.get(0).getStudentGroup(),
+                        subList.get(0).getId() + "",
+                        result.getRightAnswer(),
+                        result.getWrongAnswer(),
+                        result.getTestDate(),
+                        result.getTestTime()
+                ));
+            }
+        } catch (Exception e) {
+            //            Messages.showErrorMessage(e);
+            e.printStackTrace();
+            System.out.println(instructor.getSubjectId());
+    }}
+
+    public ObservableList<Student> getResultList() {
+        return resultList;
+    }
     public void exit() {
         primaryStage.close();
     }
