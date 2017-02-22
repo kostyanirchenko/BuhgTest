@@ -22,5 +22,6 @@
         <mapping class="entity.Questions" />
         <mapping class="entity.Answers" />
         <mapping class="entity.Instructor" />
+        <mapping class="entity.Result" />
     </session-factory>
 </hibernate-configuration>

@@ -1,6 +1,7 @@
 package source.views.testing;
 
 import entity.Students;
+import entity.Subjects;
 import javafx.scene.control.Label;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
@@ -14,7 +15,9 @@ import source.Main;
 public class TestingController {
 
     public Label testTypeLabel;
+
     private Students students;
+    private Subjects currentSubject;
 
     private Main main;
 

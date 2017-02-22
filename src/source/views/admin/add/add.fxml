@@ -18,6 +18,7 @@
             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
             <RowConstraints maxHeight="61.0" minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
             <RowConstraints maxHeight="65.0" minHeight="10.0" prefHeight="65.0" vgrow="SOMETIMES" />
+            <RowConstraints maxHeight="65.0" minHeight="10.0" prefHeight="65.0" vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
             <Label text="Вопрос" />
@@ -39,6 +40,8 @@
                   <RadioButton fx:id="fourthAnswerButton" mnemonicParsing="false" text="4" />
                </children>
             </VBox>
+            <Label text="Дисциплина" GridPane.rowIndex="6" />
+            <ComboBox fx:id="subjectField" prefHeight="25.0" prefWidth="217.0" promptText="Выберите дисциплину" GridPane.columnIndex="1" GridPane.rowIndex="6" />
          </children>
       </GridPane>
       <HBox layoutX="174.0" layoutY="326.0" prefHeight="25.0" prefWidth="124.0" spacing="15.0" AnchorPane.bottomAnchor="10.0" AnchorPane.rightAnchor="10.0">

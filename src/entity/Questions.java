@@ -12,7 +12,8 @@ import java.io.Serializable;
 @Entity
 @Table(name = "questions", uniqueConstraints = {
         @UniqueConstraint(columnNames = "id"),
-        @UniqueConstraint(columnNames = "questionText")
+        @UniqueConstraint(columnNames = "questionText"),
+        @UniqueConstraint(columnNames = "subjectId")
 })
 public class Questions implements Serializable {
 
@@ -25,6 +26,9 @@ public class Questions implements Serializable {
 
     @Column(name = "questionText", unique = true, nullable = false, length = 100)
     private String questionText;
+
+    @Column(name = "subjectId", unique = false, nullable = false, length = 3)
+    private int subjectId;
 
     public Questions() {
     }
@@ -43,5 +47,13 @@ public class Questions implements Serializable {
 
     public int getId() {
         return id;
+    }
+
+    public int getSubjectId() {
+        return subjectId;
+    }
+
+    public void setSubjectId(int subjectId) {
+        this.subjectId = subjectId;
     }
 }

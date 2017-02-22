@@ -1,7 +1,7 @@
 package source;
 
 import entity.Admin;
-import entity.Questions;
+import entity.Instructor;
 import entity.Students;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -21,11 +21,13 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import source.views.admin.AdminController;
 import source.views.admin.add.AddQuestionsController;
+import source.views.admin.instructor.InstructorController;
 import util.HibernateUtil;
 import util.Messages;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -184,15 +186,24 @@ public class Main extends Application {
                     List<Students> studentsList = (List<Students>) query1.list();
                     getStudents.getTransaction().commit();
                     getStudents.close();
+                    if (studentsList.size() == 0) {
+                        try {
+                            Session getInstructors = HibernateUtil.getSessionFactory().openSession();
+                            getInstructors.beginTransaction();
+                            Query getInstructorsQuery = getInstructors.createQuery("from Instructor where login = :login and password = :password")
+                                    .setString("login", person.getKey())
+                                    .setString("password", person.getValue());
+                            List<Instructor> instructorList = (List<Instructor>) getInstructorsQuery.list();
+                            getInstructors.getTransaction().commit();
+                            getInstructors.close();
+                            launchInstructorPanel(instructorList.get(0));
+                        } catch (Exception e) {
+                            Messages.showErrorMessage(e);
+                        }
+                    }
                     setStudent(studentsList.get(0));
                     primaryStage.show();
                 } else {
-                    try {
-                        Session session = HibernateUtil.getSessionFactory().openSession();
-                        session.beginTransaction();
-                    } catch (Exception e) {
-                        Messages.showErrorMessage(e);
-                    }
                     launchAdminPanel(admins);
                 }
             } catch (Exception e) {
@@ -203,10 +214,25 @@ public class Main extends Application {
         });
     }
 
-//    private void setAdmin(Admin admin) {
-//        this.admin = admin;
-//        application.setUser(admin);
-//    }
+    private void launchInstructorPanel(Instructor instructor) {
+        try {
+            FXMLLoader loader = new FXMLLoader();
+            AnchorPane pane = loader.load(getClass().getResourceAsStream("views/admin/instructor/instructor.fxml"));
+            Stage instructorStage = new Stage();
+            instructorStage.getIcons().add(new Image(this.getClass().getResourceAsStream("views/images/admin.jpg")));
+            instructorStage.setTitle("Администрирование");
+            instructorStage.initModality(Modality.APPLICATION_MODAL);
+            instructorStage.initOwner(primaryStage);
+            instructorStage.setScene(new Scene(pane));
+            InstructorController instructorController = loader.getController();
+            instructorController.setMain(this);
+            instructorController.setInstructor(instructor);
+            instructorController.setStage(instructorStage);
+            instructorStage.showAndWait();
+        } catch (IOException e) {
+            logger.log(Level.SEVERE, "Exception: ", e);
+        }
+    }
 
     private void setStudent(Students student) {
         this.student = student;

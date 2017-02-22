@@ -59,61 +59,29 @@ public class Application {
     }
 
     public void firstModuleButtonAction(ActionEvent actionEvent) {
-        try {
-            FXMLLoader loader = new FXMLLoader();
-            AnchorPane pane = loader.load(main.getClass().getResourceAsStream("views/testing/testing.fxml"));
-            Stage stage = new Stage();
-            stage.setTitle("Тестирование");
-            stage.initModality(Modality.WINDOW_MODAL);
-            stage.initOwner(main.getPrimaryStage());
-            stage.setScene(new Scene(pane));
-            TestingController testingController = loader.getController();
-            testingController.setMain(main);
-            user.setTest_type("Первый модуль");
-            saveStudent(user);
-            testingController.setStudents(user);
-            testingController.setStage(stage);
-            stage.showAndWait();
-        } catch (IOException e) {
-            logger.log(Level.SEVERE, "Exception: ", e);
-            Messages.showErrorMessage(e);
-        }
+        startTest("Первый модуль");
     }
 
     public void secondModuleButtonAction(ActionEvent actionEvent) {
-        try {
-            FXMLLoader loader = new FXMLLoader();
-            AnchorPane pane = loader.load(main.getClass().getResourceAsStream("views/testing/testing.fxml"));
-            Stage stage = new Stage();
-            stage.setTitle("Тестирование");
-            stage.initModality(Modality.WINDOW_MODAL);
-            stage.initOwner(main.getPrimaryStage());
-            stage.setScene(new Scene(pane));
-            TestingController testingController = loader.getController();
-            testingController.setMain(main);
-            user.setTest_type("Второй модуль");
-            saveStudent(user);
-            testingController.setStudents(user);
-            testingController.setStage(stage);
-            stage.showAndWait();
-        } catch (IOException e) {
-            logger.log(Level.SEVERE, "Exception: ", e);
-            Messages.showErrorMessage(e);
-        }
+        startTest("Второй модуль");
     }
 
     public void examButtonAction(ActionEvent actionEvent) {
+        startTest("Комплексная контрольная работа");
+    }
+
+    private void startTest(String test_type) {
         try {
             FXMLLoader loader = new FXMLLoader();
             AnchorPane pane = loader.load(main.getClass().getResourceAsStream("views/testing/testing.fxml"));
             Stage stage = new Stage();
             stage.setTitle("Тестирование");
-            stage.initModality(Modality.WINDOW_MODAL);
+            stage.initModality(Modality.APPLICATION_MODAL);
             stage.initOwner(main.getPrimaryStage());
             stage.setScene(new Scene(pane));
             TestingController testingController = loader.getController();
             testingController.setMain(main);
-            user.setTest_type("Комплексная контрольная работа");
+            user.setTest_type(test_type);
             saveStudent(user);
             testingController.setStudents(user);
             testingController.setStage(stage);

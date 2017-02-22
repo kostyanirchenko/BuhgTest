@@ -2,9 +2,12 @@
 <project version="4">
   <component name="Encoding" useUTFGuessing="true" native2AsciiForPropertiesFiles="false">
     <file url="file://$PROJECT_DIR$/src/entity/Students.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/model/Student.java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/source/Main.java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/source/views/Application.java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/source/views/admin/AdminController.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/source/views/admin/instructor/InstructorController.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/source/views/result/ResultController.java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/source/views/testing/TestingController.java" charset="UTF-8" />
   </component>
 </project>
