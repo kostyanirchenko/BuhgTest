@@ -200,7 +200,7 @@ public class Main extends Application {
                             getInstructors.close();
                             launchInstructorPanel(instructorList.get(0));
                         } catch (Exception e) {
-                            Messages.showErrorMessage(e);
+//                            Messages.showErrorMessage(e);
                         }
                     }
                     setStudent(studentsList.get(0));
@@ -297,11 +297,12 @@ public class Main extends Application {
                         stList.get(0).getName(),
                         stList.get(0).getSurname(),
                         stList.get(0).getStudentGroup(),
-                        subList.get(0).getId() + "",
+                        subList.get(0).getSubject(),
                         result.getRightAnswer(),
                         result.getWrongAnswer(),
                         result.getTestDate(),
-                        result.getTestTime()
+                        result.getTestTime(),
+                        result.getTestType()
                 ));
             }
         } catch (Exception e) {

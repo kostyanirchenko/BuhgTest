@@ -90,4 +90,9 @@ public class Question {
     public void setRightAnswer(String rightAnswer) {
         this.rightAnswer = rightAnswer;
     }
+
+    @Override
+    public String toString() {
+        return getQuestion();
+    }
 }

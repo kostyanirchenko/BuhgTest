@@ -16,7 +16,6 @@ import java.io.Serializable;
         @UniqueConstraint(columnNames = "name"),
         @UniqueConstraint(columnNames = "surname"),
         @UniqueConstraint(columnNames = "student_group"),
-        @UniqueConstraint(columnNames = "test_type"),
         @UniqueConstraint(columnNames = "login"),
         @UniqueConstraint(columnNames = "password")
 })
@@ -37,9 +36,6 @@ public class Students implements Serializable {
 
     @Column(name = "student_group", unique = false, nullable = false, length = 10)
     private String student_group;
-
-    @Column(name = "test_type", unique = false, nullable = true, length = 100)
-    private String test_type;
 
     @Column(name = "login", unique = true, nullable = false, length = 16)
     private String login;
@@ -80,14 +76,6 @@ public class Students implements Serializable {
 
     public void setStudentGroup(String student_group) {
         this.student_group = student_group;
-    }
-
-    public String getTest_type() {
-        return test_type;
-    }
-
-    public void setTest_type(String test_type) {
-        this.test_type = test_type;
     }
 
     public String getLogin() {

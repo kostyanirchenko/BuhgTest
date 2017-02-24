@@ -94,9 +94,9 @@ public class Application {
             stage.setScene(new Scene(pane));
             TestingController testingController = loader.getController();
             testingController.setMain(main, subject);
-            user.setTest_type(test_type);
-            saveStudent(user);
-            testingController.setStudents(user);
+//            user.setTest_type(test_type);
+//            saveStudent(user);
+            testingController.setStudents(user, test_type);
             testingController.setStage(stage);
             stage.showAndWait();
         } catch (IOException e) {
@@ -105,13 +105,14 @@ public class Application {
         }
     }
 
-    private void saveStudent(Students students) {
+ /*   private void saveStudent(Students students) {
+        // NENADA!!
         Session session = HibernateUtil.getSessionFactory().openSession();
         session.beginTransaction();
         session.save(students);
         session.getTransaction().commit();
         session.close();
-    }
+    }*/
 
     public void adminButtonAction(ActionEvent actionEvent) {
         Dialog<Pair<String, String>> dialog = new Dialog<>();

@@ -32,6 +32,7 @@ public class ResultController {
     public Label testTimeLabel;
 
     public Button exitButton;
+    public Label testTypeLabel;
 
     private Stage stage;
 
@@ -67,6 +68,7 @@ public class ResultController {
             wrongAnswerLabel.setText(Integer.toString(student.getWrongAnswer()));
             testDateLabel.setText(student.getTestDate());
             testTimeLabel.setText(student.getTestTime());
+            testTypeLabel.setText(student.getTestType());
         } else {
             nameLabel.setText("");
             surnameLabel.setText("");
@@ -76,6 +78,7 @@ public class ResultController {
             wrongAnswerLabel.setText("");
             testDateLabel.setText("");
             testTimeLabel.setText("");
+            testTypeLabel.setText("");
         }
     }
 

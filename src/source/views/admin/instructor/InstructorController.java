@@ -1,8 +1,6 @@
 package source.views.admin.instructor;
 
-import entity.Groups;
-import entity.Instructor;
-import entity.Students;
+import entity.*;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -18,16 +16,20 @@ import javafx.scene.layout.GridPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Pair;
+import model.Question;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import source.Main;
+import source.views.admin.instructor.edit.EditController;
 import source.views.result.ResultController;
 import util.HibernateUtil;
 import util.Messages;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Created by MarinaGagloeva.
@@ -57,6 +59,7 @@ public class InstructorController {
 
     public void setInstructor(Instructor instructor) {
         this.instructor = instructor;
+        helloLabel.setText("Здравствуйте, " + instructor.getName() + " " + instructor.getSurname());
     }
 
     private ObservableList<Groups> groupsObservableList = FXCollections.observableArrayList();
@@ -67,13 +70,13 @@ public class InstructorController {
         session.beginTransaction();
         try {
             Query query = session.createQuery("from Groups");
-            List<Groups> tmp = (List<Groups>) query.list();
+            List<Groups> groupsList = (List<Groups>) query.list();
             session.getTransaction().commit();
             session.close();
-            for (Groups g : tmp) {
+            for (Groups g : groupsList) {
                 groupsObservableList.add(g);
             }
-            tmp = null;
+            groupsList = null;
         } catch (HibernateException e) {
             Messages.showErrorMessage(e);
         }
@@ -182,7 +185,72 @@ public class InstructorController {
         if (addClicked) Messages.showInfoMessage("Операция прошла успешно!");
     }
 
+    Session getQuestionsSession;
+
     public void editButtonAction(ActionEvent actionEvent) {
+        List<Questions> questionsList;
+        List<Question> questions = new ArrayList<>();
+        try {
+            getQuestionsSession = HibernateUtil.getSessionFactory().openSession();
+            getQuestionsSession.beginTransaction();
+            Query query = getQuestionsSession.createQuery("from Questions where subjectId = :subjectId").setParameter("subjectId", instructor.getSubjectId());
+            questionsList = (List<Questions>) query.list();
+            getQuestionsSession.getTransaction().commit();
+            getQuestionsSession.close();
+            getQuestionsSession = HibernateUtil.getSessionFactory().openSession();
+            getQuestionsSession.beginTransaction();
+            for (Questions q : questionsList) {
+                Query answers = getQuestionsSession.createQuery("from Answers where questionId = :questionId")
+                        .setParameter("questionId", q.getId());
+                List<Answers> aList = (List<Answers>) answers.list();
+                questions.add(new Question(
+                        q.getId(),
+                        q.getQuestionText(),
+                        aList.get(0).getId(),
+                        aList.get(0).getFirstAnswer(),
+                        aList.get(0).getSecondAnswer(),
+                        aList.get(0).getThirdAnswer(),
+                        aList.get(0).getFourthAnswer(),
+                        aList.get(0).getRightAnswer()
+                ));
+                if (questionsList.indexOf(q) % 20 == 0) {
+                    getQuestionsSession.flush();
+                    getQuestionsSession.clear();
+                }
+            }
+            getQuestionsSession.getTransaction().commit();
+            getQuestionsSession.close();
+            questionsList.clear();
+        } catch (HibernateException e) {
+            Messages.showErrorMessage(e);
+        }
+
+        try {
+            FXMLLoader loader = new FXMLLoader();
+            AnchorPane pane = loader.load(main.getClass().getResourceAsStream("views/admin/instructor/edit/edit.fxml"));
+            Stage stage = new Stage();
+            stage.setTitle("Редактирование");
+            stage.getIcons().add(new Image(main.getClass().getResourceAsStream("views/images/edit.png")));
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.initOwner(this.stage);
+            stage.setScene(new Scene(pane));
+            EditController editController = loader.getController();
+            editController.setQuestion(getQuestionForEdit(questions));
+            editController.setStage(stage);
+            stage.showAndWait();
+        } catch (Exception e) {
+            Messages.showErrorMessage(e);
+        }
+    }
+
+    private Question getQuestionForEdit(List<Question> questionList) {
+        ObservableList<Question> tmp = FXCollections.observableArrayList(questionList);
+        ChoiceDialog<Question> choiceDialog = new ChoiceDialog<>(null, tmp);
+        choiceDialog.setTitle("Редактирование");
+        choiceDialog.setHeaderText("Выбор вопроса");
+        choiceDialog.setContentText("Пожалуйста, выберите вопрос для редактирования");
+        Optional<Question> result = choiceDialog.showAndWait();
+        return result.get();
     }
 
     public void showResultButtonAction(ActionEvent actionEvent) {

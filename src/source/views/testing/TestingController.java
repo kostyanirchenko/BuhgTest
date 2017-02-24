@@ -1,9 +1,6 @@
 package source.views.testing;
 
-import entity.Answers;
-import entity.Questions;
-import entity.Students;
-import entity.Subjects;
+import entity.*;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -19,6 +16,7 @@ import source.Main;
 import util.HibernateUtil;
 import util.Messages;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -56,9 +54,9 @@ public class TestingController {
     private int rightAnswer = 0;
     private int iterate = 1;
 
-    public void setStudents(Students students) {
+    public void setStudents(Students students, String testType) {
         this.students = students;
-        testTypeLabel.setText(students.getTest_type());
+        testTypeLabel.setText(testType);
         testTypeLabel.setTextAlignment(TextAlignment.CENTER);
     }
 
@@ -70,20 +68,38 @@ public class TestingController {
         thirdAnswerButton.setToggleGroup(toggleGroup);
         fourthAnswerButton.setToggleGroup(toggleGroup);
         questionLabel.setTextAlignment(TextAlignment.CENTER);
+        Session session;
         try {
-            Session session = HibernateUtil.getSessionFactory().openSession();
+            session = HibernateUtil.getSessionFactory().openSession();
             session.beginTransaction();
             Query query = session.createQuery("from Questions where subjectId = :subjectId").setParameter("subjectId", currentSubject.getId());
             questionsList = (List<Questions>) query.list();
-            int firstQuestion = questionsList.get(0).getId();
             session.getTransaction().commit();
             session.close();
             session = HibernateUtil.getSessionFactory().openSession();
             session.beginTransaction();
-            Query answers = session.createQuery("from Answers where questionId = :questionId").setParameter("questionId", firstQuestion);
-            answersList = (List<Answers>) answers.list();
+            for (Questions questionss : questionsList) {
+                Query answers = session.createQuery("from Answers where questionId = :questionId").setParameter("questionId", questionss.getId());
+                answersList = (List<Answers>) answers.list();
+                questions.add(new Question(
+                        questionss.getId(),
+                        questionss.getQuestionText(),
+                        answersList.get(0).getId(),
+                        answersList.get(0).getFirstAnswer(),
+                        answersList.get(0).getSecondAnswer(),
+                        answersList.get(0).getThirdAnswer(),
+                        answersList.get(0).getFourthAnswer(),
+                        answersList.get(0).getRightAnswer()
+                ));
+                if (questionsList.indexOf(questionss) % 20 == 0) {
+                    session.flush();
+                    session.clear();
+                }
+            }
             session.getTransaction().commit();
             session.close();
+//            questionsList.clear();
+            answersList.clear();
             for (Questions q : questionsList) {
                 questions.addAll(answersList.stream().map(a -> new Question(
                         q.getId(),
@@ -100,11 +116,11 @@ public class TestingController {
             Messages.showErrorMessage(e);
         }
         if(!questionsList.isEmpty()) {
-            questionLabel.setText(questionsList.get(0).getQuestionText());
-            firstAnswerButton.setText(answersList.get(0).getFirstAnswer());
-            secondAnswerButton.setText(answersList.get(0).getSecondAnswer());
-            thirdAnswerButton.setText(answersList.get(0).getThirdAnswer());
-            fourthAnswerButton.setText(answersList.get(0).getFourthAnswer());
+            questionLabel.setText(questions.get(0).getQuestion());
+            firstAnswerButton.setText(questions.get(0).getFirstAnswer());
+            secondAnswerButton.setText(questions.get(0).getSecondAnswer());
+            thirdAnswerButton.setText(questions.get(0).getThirdAnswer());
+            fourthAnswerButton.setText(questions.get(0).getFourthAnswer());
         } else {
             questionLabel.setVisible(false);
             firstAnswerButton.setVisible(false);
@@ -121,45 +137,54 @@ public class TestingController {
 
     public void answerButtonAction(ActionEvent actionEvent) {
         RadioButton currentAnswer = (RadioButton) toggleGroup.getSelectedToggle();
-
-        if (iterate >= questionsList.size()) {
-            Messages.showInfoMessage("SUCCESS");
-            stage.close();
-
-
-        } else {
-            try {
-            /*if (iterate >= questionsList.size()) {
+        if (currentAnswer != null) {
+            if (iterate >= questionsList.size()) {
                 Messages.showInfoMessage("SUCCESS");
-                stage.close();
-            }*/
                 Session session = HibernateUtil.getSessionFactory().openSession();
                 session.beginTransaction();
-                Query query = session.createQuery("from Answers where questionId = :questionId")
-                        .setParameter("questionId", questions.get(iterate).getId());
-//                    .setString("rightAnswer", currentAnswer.getText());
-                List<Answers> currAnswer = (List<Answers>) query.list();
+                String date = new SimpleDateFormat("dd.MM.yyyy").format(System.currentTimeMillis());
+                String time = new SimpleDateFormat("HH:mm:ss").format(System.currentTimeMillis());
+                Result result = new Result();
+                result.setStudentId(students.getId());
+                result.setSubjectId(currentSubject.getId());
+                result.setRightAnswer(rightAnswer);
+                result.setWrongAnswer(wrongAnswer);
+                result.setTestDate(date);
+                result.setTestTime(time);
+                result.setTestType(testTypeLabel.getText());
+                session.save(result);
                 session.getTransaction().commit();
                 session.close();
-                if(currentAnswer.getText().equals(currAnswer.get(0).getRightAnswer())) {
-                    rightAnswer++;
-                } else {
-                    wrongAnswer++;
+                stage.close();
+            } else {
+                try {
+                    Session session = HibernateUtil.getSessionFactory().openSession();
+                    session.beginTransaction();
+                    Query query = session.createQuery("from Answers where questionId = :questionId")
+                            .setParameter("questionId", questions.get(iterate).getId());
+                    List<Answers> currAnswer = (List<Answers>) query.list();
+                    session.getTransaction().commit();
+                    session.close();
+                    if(currentAnswer.getText().equals(currAnswer.get(0).getRightAnswer())) {
+                        rightAnswer++;
+                    } else {
+                        wrongAnswer++;
+                    }
+                } catch (HibernateException e) {
+                    Messages.showErrorMessage(e);
+                }
+                if (iterate <= questionsList.size()) {
+                    questionLabel.setText(questions.get(iterate).getQuestion());
+                    firstAnswerButton.setText(questions.get(iterate).getFirstAnswer());
+                    secondAnswerButton.setText(questions.get(iterate).getSecondAnswer());
+                    thirdAnswerButton.setText(questions.get(iterate).getThirdAnswer());
+                    fourthAnswerButton.setText(questions.get(iterate).getFourthAnswer());
                 }
                 iterate++;
-            } catch (HibernateException e) {
-//            Messages.showErrorMessage(e);
-                e.printStackTrace();
+                toggleGroup.selectToggle(null);
             }
-            // TODO BLYAT!
-            /*if (iterate <= questionsList.size()) {
-                questionLabel.setText(questions.get(iterate).getQuestion());
-                firstAnswerButton.setText(questions.get(iterate).getFirstAnswer());
-                secondAnswerButton.setText(questions.get(iterate).getSecondAnswer());
-                thirdAnswerButton.setText(questions.get(iterate).getThirdAnswer());
-                fourthAnswerButton.setText(questions.get(iterate).getFourthAnswer());
-            }*/
-
+        } else {
+            Messages.showLoginErrorMessage("Не выбран не один из ответов");
         }
     }
 

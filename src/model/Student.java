@@ -20,9 +20,10 @@ public class Student {
     private final IntegerProperty wrongAnswer;
     private final StringProperty testDate;
     private final StringProperty testTime;
+    private final StringProperty testType;
 
     public Student(String studentName, String studentSurname, String studentGroup, String subject,
-                   int rightAnswer, int wrongAnswer, String  testDate, String testTime) {
+                   int rightAnswer, int wrongAnswer, String  testDate, String testTime, String testType) {
         this.studentName = new SimpleStringProperty(studentName);
         this.studentSurname = new SimpleStringProperty(studentSurname);
         this.studentGroup = new SimpleStringProperty(studentGroup);
@@ -31,10 +32,11 @@ public class Student {
         this.wrongAnswer = new SimpleIntegerProperty(wrongAnswer);
         this.testDate = new SimpleStringProperty(testDate);
         this.testTime = new SimpleStringProperty(testTime);
+        this.testType = new SimpleStringProperty(testType);
     }
 
     public Student() {
-        this(null, null, null, null, 0, 0, null, null);
+        this(null, null, null, null, 0, 0, null, null, null);
     }
 
     public String getStudentName() {
@@ -131,5 +133,17 @@ public class Student {
 
     public void setTestTime(String testTime) {
         this.testTime.set(testTime);
+    }
+
+    public String getTestType() {
+        return testType.get();
+    }
+
+    public StringProperty testTypeProperty() {
+        return testType;
+    }
+
+    public void setTestType(String testType) {
+        this.testType.set(testType);
     }
 }

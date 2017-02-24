@@ -17,7 +17,8 @@ import java.io.Serializable;
         @UniqueConstraint(columnNames = "rightAnswer"),
         @UniqueConstraint(columnNames = "wrongAnswer"),
         @UniqueConstraint(columnNames = "testDate"),
-        @UniqueConstraint(columnNames = "testTime")
+        @UniqueConstraint(columnNames = "testTime"),
+        @UniqueConstraint(columnNames = "testType")
 })
 public class Result implements Serializable {
 
@@ -43,6 +44,9 @@ public class Result implements Serializable {
 
     @Column(name = "testTime", unique = false, nullable = false, length = 9)
     private String testTime;
+
+    @Column(name = "testType", unique = false, nullable = false)
+    private String testType;
 
     public int getId() {
         return id;
@@ -94,5 +98,13 @@ public class Result implements Serializable {
 
     public void setTestTime(String testTime) {
         this.testTime = testTime;
+    }
+
+    public String getTestType() {
+        return testType;
+    }
+
+    public void setTestType(String testType) {
+        this.testType = testType;
     }
 }
