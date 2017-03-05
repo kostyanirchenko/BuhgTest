@@ -2,33 +2,24 @@ package source.views.admin;
 
 import entity.*;
 import javafx.application.Platform;
-import javafx.beans.Observable;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.image.ImageView;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import source.Main;
-import source.views.admin.add.AddQuestionsController;
 import util.HibernateUtil;
 import util.Messages;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -62,6 +53,11 @@ public class AdminController {
     }
 
     public void addAdminButtonAction(ActionEvent actionEvent) {
+        ComboBox<Subjects> subjectsComboBox = new ComboBox<>(selectAllSubjects());
+        if (subjectsComboBox.getItems().size() == 0) {
+            Messages.showLoginErrorMessage("Сначала нужно добавить дисциплину в базу данных");
+            addSubjectButtonAction(null);
+        }
         Dialog<Pair<String, String>> addAdminDialog = new Dialog<>();
         addAdminDialog.setTitle("Добавление администратора");
         addAdminDialog.setHeaderText("Пожалуйста укажите данные нового администратора");
@@ -91,7 +87,6 @@ public class AdminController {
         TextField surname = new TextField();
         surname.setPromptText("Введите фамилию");
         surname.setDisable(true);
-        ComboBox<Subjects> subjectsComboBox = new ComboBox<>(selectAllSubjects());
         subjectsComboBox.setDisable(true);
         grid.add(new Label("Имя :"), 0, 3);
         grid.add(name, 1, 3);
@@ -125,17 +120,21 @@ public class AdminController {
                 session.getTransaction().commit();
                 session.close();
             } else {
-                Session session = HibernateUtil.getSessionFactory().openSession();
-                session.beginTransaction();
-                Instructor instructor = new Instructor();
-                instructor.setName(name.getText());
-                instructor.setSurname(surname.getText());
-                instructor.setLogin(newAdmin.getKey());
-                instructor.setPassword(newAdmin.getValue());
-                instructor.setSubjectId(subjectsComboBox.getSelectionModel().getSelectedItem().getId());
-                session.save(instructor);
-                session.getTransaction().commit();
-                session.close();
+                if (subjectsComboBox.getSelectionModel().getSelectedItem() == null) {
+                    Messages.showLoginErrorMessage("Не выбрана дисциплина");
+                } else {
+                    Session session = HibernateUtil.getSessionFactory().openSession();
+                    session.beginTransaction();
+                    Instructor instructor = new Instructor();
+                    instructor.setName(name.getText());
+                    instructor.setSurname(surname.getText());
+                    instructor.setLogin(newAdmin.getKey());
+                    instructor.setPassword(newAdmin.getValue());
+                    instructor.setSubjectId(subjectsComboBox.getSelectionModel().getSelectedItem().getId());
+                    session.save(instructor);
+                    session.getTransaction().commit();
+                    session.close();
+                }
             }
         });
     }
@@ -158,7 +157,8 @@ public class AdminController {
     }
 
     public void backButtonAction(ActionEvent actionEvent) {
-        stage.close();
+        stage.hide();
+        main.login();
     }
 
     public void setMain(Main main) {
@@ -200,7 +200,12 @@ public class AdminController {
     private ObservableList<Groups> groupsObservableList = FXCollections.observableArrayList();
 
     public void addStudentButtonAction(ActionEvent actionEvent) {
-        if (groupsObservableList.size() != 0) groupsObservableList.clear();
+        if (groupsObservableList.size() != 0) {
+            groupsObservableList.clear();
+        } else {
+            Messages.showLoginErrorMessage("Сначала нужно добавить группу в базу данных");
+            addGroupButtonAction(null);
+        }
         Session session = HibernateUtil.getSessionFactory().openSession();
         session.beginTransaction();
         try {
@@ -233,7 +238,7 @@ public class AdminController {
         password.setPromptText("Введите пароль");
         ComboBox<Groups> groups = new ComboBox<>();
         groups.setItems(groupsObservableList);
-        groups.setValue(groupsObservableList.get(0));
+        groups.setPromptText("Выберите группу");
         TextField studentSurname = new TextField();
         studentSurname.setPromptText("Введите фамилию");
         grid.add(new Label("Логин :"), 0, 0);
@@ -261,17 +266,21 @@ public class AdminController {
         });
         Optional<Pair<String, String>> result = dialog.showAndWait();
         result.ifPresent(usernamePassword -> {
-            Session saveStudent = HibernateUtil.getSessionFactory().openSession();
-            saveStudent.beginTransaction();
-            Students students = new Students();
-            students.setLogin(usernamePassword.getKey());
-            students.setPassword(usernamePassword.getValue());
-            students.setName(studentName.getText());
-            students.setSurname(studentSurname.getText());
-            students.setStudentGroup(groups.getSelectionModel().getSelectedItem().toString());
-            saveStudent.save(students);
-            saveStudent.getTransaction().commit();
-            saveStudent.close();
+            if (groups.getSelectionModel().getSelectedItem() != null) {
+                Session saveStudent = HibernateUtil.getSessionFactory().openSession();
+                saveStudent.beginTransaction();
+                Students students = new Students();
+                students.setLogin(usernamePassword.getKey());
+                students.setPassword(usernamePassword.getValue());
+                students.setName(studentName.getText());
+                students.setSurname(studentSurname.getText());
+                students.setStudentGroup(groups.getSelectionModel().getSelectedItem().toString());
+                saveStudent.save(students);
+                saveStudent.getTransaction().commit();
+                saveStudent.close();
+            } else {
+                Messages.showLoginErrorMessage("Не выбрана группа!");
+            }
         });
     }
 

@@ -29,7 +29,6 @@ import util.Messages;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Created by MarinaGagloeva.
@@ -276,6 +275,8 @@ public class InstructorController {
     }
 
     public void exitButtonAction(ActionEvent actionEvent) {
-        System.exit(0);
+//        System.exit(0);
+        stage.hide();
+        main.login();
     }
 }

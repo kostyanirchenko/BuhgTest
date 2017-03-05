@@ -54,8 +54,6 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         this.primaryStage = primaryStage;
-        this.primaryStage.setTitle("Тестирование");
-        this.primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("views/images/database.png")));
         Session session = HibernateUtil.getSessionFactory().openSession();
         session.beginTransaction();
         Query query = session.createQuery("from Admin");
@@ -97,7 +95,7 @@ public class Main extends Application {
     private source.views.Application application;
 
     private void launchApplication() {
-        FXMLLoader loader = new FXMLLoader();
+        /*FXMLLoader loader = new FXMLLoader();
         AnchorPane anchorPane;
         try {
             anchorPane = loader.load(getClass().getResourceAsStream("views/application.fxml"));
@@ -105,7 +103,7 @@ public class Main extends Application {
             this.application.setMain(this);
             Scene scene = new Scene(anchorPane);
             primaryStage.setScene(scene);
-
+            application.setStage(primaryStage);
 //            student = login();
 //
 //            application.setUser(student);
@@ -113,30 +111,56 @@ public class Main extends Application {
 //            primaryStage.show();
         } catch (IOException e) {
             logger.log(Level.SEVERE, "Exception: ", e);
-        }
+        }*/
+        login();
     }
 
     public void launchAdminPanel(List<Admin> adm) {
         try {
             FXMLLoader loader = new FXMLLoader();
             AnchorPane pane = loader.load(getClass().getResourceAsStream("views/admin/admin.fxml"));
-            Stage adminStage = new Stage();
-            adminStage.getIcons().add(new Image(this.getClass().getResourceAsStream("views/images/admin.jpg")));
-            adminStage.setTitle("Администрирование");
-            adminStage.initModality(Modality.APPLICATION_MODAL);
-            adminStage.initOwner(primaryStage);
-            adminStage.setScene(new Scene(pane));
+//            Stage adminStage = new Stage();
+            primaryStage.getIcons().add(new Image(this.getClass().getResourceAsStream("views/images/admin.jpg")));
+            primaryStage.setTitle("Администрирование");
+//            primaryStage.initModality(Modality.APPLICATION_MODAL);
+//            primaryStage.initOwner(primaryStage);
+            primaryStage.setScene(new Scene(pane));
             AdminController adminController = loader.getController();
             adminController.setMain(this);
             adminController.setAdmin(adm);
-            adminController.setStage(adminStage);
-            adminStage.showAndWait();
+            adminController.setStage(primaryStage);
+            primaryStage.show();
         } catch (IOException e) {
             logger.log(Level.SEVERE, "Exception: ", e);
         }
     }
 
-    private void login() {
+    private void launchStudentPanel(Students student) {
+
+        FXMLLoader loader = new FXMLLoader();
+        AnchorPane anchorPane;
+        try {
+            anchorPane = loader.load(getClass().getResourceAsStream("views/application.fxml"));
+            this.application = loader.getController();
+            this.application.setMain(this);
+            this.primaryStage.setTitle("Тестирование");
+            this.primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("views/images/testing.png")));
+            Scene scene = new Scene(anchorPane);
+            primaryStage.setScene(scene);
+            application.setStage(primaryStage);
+            application.setUser(student);
+//            student = login();
+//
+//            application.setUser(student);
+//            login();
+            primaryStage.show();
+        } catch (IOException e) {
+            logger.log(Level.SEVERE, "Exception: ", e);
+        }
+    }
+
+    public void login() {
+        primaryStage.getIcons().clear();
         Dialog<Pair<String, String>> dialog = new Dialog<>();
         dialog.setTitle("Вход");
         dialog.setHeaderText("Пожалуйста, авторизируйтесь под\nвашей учетной записью");
@@ -188,6 +212,7 @@ public class Main extends Application {
                     List<Students> studentsList = (List<Students>) query1.list();
                     getStudents.getTransaction().commit();
                     getStudents.close();
+                    System.out.println(studentsList.size());
                     if (studentsList.size() == 0) {
                         try {
                             Session getInstructors = HibernateUtil.getSessionFactory().openSession();
@@ -202,14 +227,18 @@ public class Main extends Application {
                         } catch (Exception e) {
 //                            Messages.showErrorMessage(e);
                         }
+                    } else {
+                        launchStudentPanel(studentsList.get(0));
+//                        setStudent(studentsList.get(0));
+
                     }
-                    setStudent(studentsList.get(0));
-                    primaryStage.show();
+//                    primaryStage.show();
                 } else {
                     launchAdminPanel(admins);
                 }
             } catch (Exception e) {
                 Messages.showLoginErrorMessage("Введен неверный логин или пароль, попробуйте еще раз.");
+                e.printStackTrace();
                 login();
             }
 
@@ -220,26 +249,26 @@ public class Main extends Application {
         try {
             FXMLLoader loader = new FXMLLoader();
             AnchorPane pane = loader.load(getClass().getResourceAsStream("views/admin/instructor/instructor.fxml"));
-            Stage instructorStage = new Stage();
-            instructorStage.getIcons().add(new Image(this.getClass().getResourceAsStream("views/images/admin.jpg")));
-            instructorStage.setTitle("Администрирование");
-            instructorStage.initModality(Modality.APPLICATION_MODAL);
-            instructorStage.initOwner(primaryStage);
-            instructorStage.setScene(new Scene(pane));
+//            Stage instructorStage = new Stage();
+            primaryStage.getIcons().add(new Image(this.getClass().getResourceAsStream("views/images/admin.jpg")));
+            primaryStage.setTitle("Панель преподавателя");
+//            primaryStage.initModality(Modality.APPLICATION_MODAL);
+//            primaryStage.initOwner(primaryStage);
+            primaryStage.setScene(new Scene(pane));
             InstructorController instructorController = loader.getController();
             instructorController.setMain(this);
             instructorController.setInstructor(instructor);
-            instructorController.setStage(instructorStage);
-            instructorStage.showAndWait();
+            instructorController.setStage(primaryStage);
+            primaryStage.show();
         } catch (IOException e) {
             logger.log(Level.SEVERE, "Exception: ", e);
         }
     }
 
-    private void setStudent(Students student) {
-        this.student = student;
-        application.setUser(student);
-    }
+//    private void setStudent(Students student) {
+//        this.student = student;
+//        application.setUser(student);
+//    }
 
     public boolean addNewQuestion(/*Questions question*/) {
         try {

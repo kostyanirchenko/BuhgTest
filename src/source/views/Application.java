@@ -49,6 +49,12 @@ public class Application {
 
     private Main main;
 
+    private Stage stage;
+
+    public void setStage(Stage stage) {
+        this.stage = stage;
+    }
+
     public void setUser(Students user) {
         this.user = user;
         helloLabel.setText("Здравствуйте, " + user.getName() + " " + user.getSurname() +
@@ -174,6 +180,7 @@ public class Application {
     }
 
     public void exitButtonAction(ActionEvent actionEvent) {
-        main.exit();
+        stage.hide();
+        main.login();
     }
 }

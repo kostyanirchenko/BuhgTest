@@ -138,8 +138,25 @@ public class TestingController {
     public void answerButtonAction(ActionEvent actionEvent) {
         RadioButton currentAnswer = (RadioButton) toggleGroup.getSelectedToggle();
         if (currentAnswer != null) {
+            try {
+                Session session = HibernateUtil.getSessionFactory().openSession();
+                session.beginTransaction();
+                Query query = session.createQuery("from Answers where questionId = :questionId")
+                        .setParameter("questionId", questions.get(iterate - 1).getId());
+                List<Answers> currAnswer = (List<Answers>) query.list();
+                session.getTransaction().commit();
+                session.close();
+                System.out.println(currentAnswer.getText() +
+                        " " + currAnswer.get(0).getRightAnswer());
+                if(currentAnswer.getText().equals(currAnswer.get(0).getRightAnswer())) {
+                    rightAnswer++;
+                } else {
+                    wrongAnswer++;
+                }
+            } catch (HibernateException e) {
+                Messages.showErrorMessage(e);
+            }
             if (iterate >= questionsList.size()) {
-                Messages.showInfoMessage("SUCCESS");
                 Session session = HibernateUtil.getSessionFactory().openSession();
                 session.beginTransaction();
                 String date = new SimpleDateFormat("dd.MM.yyyy").format(System.currentTimeMillis());
@@ -155,31 +172,25 @@ public class TestingController {
                 session.save(result);
                 session.getTransaction().commit();
                 session.close();
+                Messages.showInfoMessage(
+                        "Ура, вы ответили на все вопросы!\n" +
+                                "Студент: " + students.getName() + " " + students.getSurname()
+                                + "\nГруппа: " + students.getStudentGroup()
+                                + "\nДисциплина: " + currentSubject.getSubject()
+                                + "\nТип теста: " + testTypeLabel.getText()
+                                + "\nКоличество правильных ответов: " + rightAnswer
+                                + "\nКоличество неправильных ответов: " + wrongAnswer
+                                + "\nВремя окончания тестирования: " + time
+                );
                 stage.close();
             } else {
-                try {
-                    Session session = HibernateUtil.getSessionFactory().openSession();
-                    session.beginTransaction();
-                    Query query = session.createQuery("from Answers where questionId = :questionId")
-                            .setParameter("questionId", questions.get(iterate).getId());
-                    List<Answers> currAnswer = (List<Answers>) query.list();
-                    session.getTransaction().commit();
-                    session.close();
-                    if(currentAnswer.getText().equals(currAnswer.get(0).getRightAnswer())) {
-                        rightAnswer++;
-                    } else {
-                        wrongAnswer++;
-                    }
-                } catch (HibernateException e) {
-                    Messages.showErrorMessage(e);
-                }
-                if (iterate <= questionsList.size()) {
+//                if (iterate <= questionsList.size()) {
                     questionLabel.setText(questions.get(iterate).getQuestion());
                     firstAnswerButton.setText(questions.get(iterate).getFirstAnswer());
                     secondAnswerButton.setText(questions.get(iterate).getSecondAnswer());
                     thirdAnswerButton.setText(questions.get(iterate).getThirdAnswer());
                     fourthAnswerButton.setText(questions.get(iterate).getFourthAnswer());
-                }
+//                }
                 iterate++;
                 toggleGroup.selectToggle(null);
             }
